@@ -1,14 +1,23 @@
 {
   "manifest_version": 3,
   "name": "Headline News: Open in New Tab",
-  "version": "1.0.0",
-  "description": "On Google's 'headline news' search page, opens Top stories previews in a new tab.",
+  "version": "1.1.0",
+  "description": "On Google's 'headline news' search page, opens Top stories previews in a background tab.",
   "content_scripts": [
     {
-      "matches": ["https://www.google.com/search*"],
-      "include_globs": ["https://www.google.com/search?q=headline+news*"],
-      "js": ["content.js"],
+      "matches": [
+        "https://www.google.com/search*"
+      ],
+      "include_globs": [
+        "https://www.google.com/search?q=headline+news*"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_start"
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

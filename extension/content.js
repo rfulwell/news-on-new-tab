@@ -1,5 +1,5 @@
 // Makes the "Top stories" previews on https://www.google.com/search?q=headline+news...
-// open in a new tab instead of navigating the current one.
+// open in a background tab instead of navigating the current one.
 (() => {
   "use strict";
 
@@ -59,16 +59,20 @@
     }
   }
 
-  // Intercept before Google's own handlers so they can't navigate the current tab;
-  // the browser's default action then opens the link (target=_blank) in a new tab.
+  // Intercept before Google's own handlers so they can't navigate the current tab,
+  // and have the background script open the link in a background tab.
   window.addEventListener(
     "click",
     (e) => {
       if (e.button !== 0) return;
       const a = storyLinkFor(e.target);
       if (!a) return;
-      mark(a);
+      e.preventDefault();
       e.stopImmediatePropagation();
+      chrome.runtime.sendMessage({ type: "open-background", url: a.href }).catch(() => {
+        // Extension was reloaded/updated under this page: fall back to a normal new tab.
+        window.open(a.href, "_blank", "noopener");
+      });
     },
     true
   );
