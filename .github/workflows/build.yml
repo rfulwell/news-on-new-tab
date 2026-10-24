@@ -1,0 +1,48 @@
+name: Build extension
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate
+        run: |
+          node -e 'JSON.parse(require("fs").readFileSync("extension/manifest.json","utf8"))'
+          node --check extension/content.js
+
+      - name: Package
+        id: pkg
+        run: |
+          VERSION=$(node -p 'require("./extension/manifest.json").version')
+          ZIP="headline-news-new-tab-v${VERSION}.zip"
+          (cd extension && zip -r "../${ZIP}" .)
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "zip=${ZIP}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: headline-news-new-tab-v${{ steps.pkg.outputs.version }}
+          path: extension/
+
+      - name: Publish release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.pkg.outputs.version }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${{ steps.pkg.outputs.zip }}" --clobber
+          else
+            gh release create "$TAG" "${{ steps.pkg.outputs.zip }}" --target "$GITHUB_SHA" \
+              --title "$TAG" --notes "Unzip and load the folder via brave://extensions → Developer mode → Load unpacked."
+          fi
