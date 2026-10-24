@@ -24,14 +24,14 @@ jobs:
         id: pkg
         run: |
           VERSION=$(node -p 'require("./extension/manifest.json").version')
-          ZIP="headline-news-new-tab-v${VERSION}.zip"
+          ZIP="news-on-new-tab-v${VERSION}.zip"
           (cd extension && zip -r "../${ZIP}" .)
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "zip=${ZIP}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: headline-news-new-tab-v${{ steps.pkg.outputs.version }}
+          name: news-on-new-tab-v${{ steps.pkg.outputs.version }}
           path: extension/
 
       - name: Publish release

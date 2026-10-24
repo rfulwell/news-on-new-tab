@@ -7,7 +7,7 @@ other site, is touched. No permissions, no background script.
 
 ## Install (sideload)
 
-1. Open the latest [Release](../../releases/latest) and download `headline-news-new-tab-vX.Y.Z.zip`.
+1. Open the latest [Release](../../releases/latest) and download `news-on-new-tab-vX.Y.Z.zip`.
 2. Unzip it to a folder you'll keep (the browser loads it from there).
 3. Go to `brave://extensions` (or `chrome://extensions`), turn on **Developer mode**.
 4. Click **Load unpacked** and choose the unzipped folder.
